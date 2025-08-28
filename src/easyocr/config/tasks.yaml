@@ -1,0 +1,44 @@
+extract_text_task:
+  description: >
+    Use the OCR tool to extract text from images in the "c:/easyocr/knowledge/images" folder.
+    Then transform the OCR results into a structured JSON file with keys:
+    - text
+    - bounding_box
+    - confidence
+    Finally, save the JSON file into "c:/easyocr/knowledge/map-json/".
+  expected_output: >
+    A JSON file for each image, containing OCR text entries with:
+    - text
+    - bounding_box
+    - confidence
+  agent: ocr_agent
+
+guidance_task:
+  description: >
+    Your sole task is to generate walking directions by strictly following this procedure. Do not deviate.
+
+    PROCEDURE:
+    1.  The OCR data you need is always saved with a file name 'ocr_5250.json'. Construct the full path to this file using the provided directory: {json_output_dir}.
+
+    2.  Immediately delegate to the **FileReadTool** by providing it with the full JSON file path you determined in Step 1.
+
+    3.  Immediately delegate to the **ImageReadTool** by providing it with the image file path: {image_file_path}.
+
+    4.  Analyze the results from your tools. From the JSON content (from Step 2) and the image (from Step 3), parse the JSON to find the coordinates for the start location '{start_location}' and the destination '{destination}'.
+
+    5.  Based ONLY on the tool outputs, formulate and provide the final walking directions as a numbered list.
+  expected_output: >
+    A numbered list of clear, step-by-step walking directions.
+# guidance_task:
+#   description: >
+#     Generate step-by-step walking directions using a crucial JSON data file and a mall map image.
+
+#     **CRITICAL INSTRUCTIONS:**
+#     1.  Your first step is to use the ImageReadTool to load the mall map from this file path: {image_file_path}
+#     2.  You have to use the FileReadTool to read the given `json_data` extracted from the map. This JSON contains a list of all text labels and their bounding box coordinates JSON file path:{json_output_dir}.
+#     3.  Parse the `json_data` to find the coordinates for the starting location and destination from the `user_query`.
+#     4.  Analyze the loaded mall map image to understand the walkable paths and overall layout.
+#     5.  Formulate a logical path from the start coordinates to the end coordinates.
+#     6.  Describe the path in a series of simple, numbered steps, referencing landmarks you identify from the map and JSON.
+#   expected_output: >
+#     A numbered list of clear, step-by-step walking directions that are verifiably based on the coordinates in the JSON data and the visual layout of the map image.
